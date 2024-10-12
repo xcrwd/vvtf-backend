@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import 'dotenv/config';
-import { start as tgBotStart } from './tgBot';
+import { start as tgBotStart } from './tg.bot';
 
 async function bootstrapNest() {
   const app = await NestFactory.create(AppModule);

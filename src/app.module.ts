@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
-import { TonSignature } from './app.service';
+import { TonSignature } from './ton.signature.service';
 
 @Module({
   imports: [
