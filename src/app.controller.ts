@@ -37,6 +37,9 @@ export class AppController {
       `*Signature*: ${verifiableFormDto.tonproof.signature.replaceAll('+', '\\+').replaceAll('=', '\\=')}`,
     );
     tgBot.sendMessage(msg.join(ESCP));
+    if (verifiableFormDto.user && verifiableFormDto.user.id) {
+      tgBot.sendMessage('Thank you for submit!');
+    }
   }
 }
 
