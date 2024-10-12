@@ -27,9 +27,9 @@ export class AppController {
 
     const msg = [];
     for (const [k, v] of Object.entries(verifiableFormDto.form)) {
-      msg.push(k, '\n', v, '\n');
+      msg.push(`*${k}*`, '\n', v, '\n');
     }
-    msg.push(`Signature: ${verifiableFormDto.tonproof.signature}`);
+    msg.push(`*Signature: ${verifiableFormDto.tonproof.signature}*`);
     tgBot.sendMessage(JSON.stringify(msg.join('\n')));
   }
 }

@@ -54,7 +54,7 @@ function start() {
 
 function sendMessage(message: string) {
   for (const { chatId } of chatList) {
-    bot.telegram.sendMessage(chatId, message);
+    bot.telegram.sendMessage(chatId, message, { parse_mode: 'MarkdownV2' });
   }
 }
 
