@@ -52,10 +52,12 @@ function start() {
   started = true;
 }
 
-function sendMessage(message: string) {
+async function sendMessage(message: string) {
   for (const { chatId } of chatList) {
     try {
-      bot.telegram.sendMessage(chatId, message, { parse_mode: 'MarkdownV2' });
+      await bot.telegram.sendMessage(chatId, message, {
+        parse_mode: 'MarkdownV2',
+      });
       // bot.telegram.sendMessage(chatId, message);
     } catch (e) {
       console.error(e);
