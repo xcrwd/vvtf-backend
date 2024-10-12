@@ -6,6 +6,8 @@ import { start as tgBotStart } from './tgBot';
 async function bootstrapNest() {
   const app = await NestFactory.create(AppModule);
   await app.listen(process.env.API_PORT);
+  process.once('SIGINT', () => app.close());
+  process.once('SIGTERM', () => app.close());
 }
 
 async function main() {

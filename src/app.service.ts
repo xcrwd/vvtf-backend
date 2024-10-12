@@ -5,6 +5,6 @@ import { PostFormDto } from './dto/postFormDto';
 export class TonSignature {
   checkSignature(postFormDto: PostFormDto): boolean {
     console.log(postFormDto);
-    return false;
+    return true;
   }
 }

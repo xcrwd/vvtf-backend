@@ -1,26 +1,28 @@
 import { Telegraf } from 'telegraf';
 import * as fs from 'fs';
+import 'dotenv/config';
 
-const ADMIN_FILE = './admin';
-const DELIMITER = ';';
+const CHAT_LIST_FILE = './chat_list';
 
-const bot = new Telegraf(process.env.BOT_TOKEN);
+const bot = new Telegraf(process.env.TG_BOT_TOKEN);
+
+interface Chat {
+  userId: number;
+  chatId: number;
+}
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-let admin: number;
-let chatId: number;
 let started: boolean;
+let chatList: Chat[] = [];
 
 bot.start((ctx) => {
+  const userId = ctx.from.id;
   if (!isInitialized()) {
-    admin = ctx.from.id;
-    chatId = ctx.chat.id;
-    fs.writeFileSync(
-      ADMIN_FILE,
-      `${admin.toString()}${DELIMITER}${chatId.toString()}`,
-    );
+    const chatId = ctx.chat.id;
+    chatList.push({ userId, chatId });
+    fs.writeFileSync(CHAT_LIST_FILE, JSON.stringify(chatList));
     ctx.reply('You are the admin now');
   } else {
-    ctx.reply('Hello');
+    ctx.reply(`Hello! Your id: ${userId}`);
   }
 });
 
@@ -28,7 +30,7 @@ process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
 
 function isInitialized(): boolean {
-  return admin !== null && admin !== undefined && admin !== 0;
+  return chatList.length !== 0;
 }
 
 function start() {
@@ -36,12 +38,13 @@ function start() {
     return;
   }
 
-  const savedAdmin = fs.readFileSync(ADMIN_FILE, 'utf-8');
-  if (savedAdmin != '') {
-    const [adminStr, chatIdStr] = savedAdmin.split(DELIMITER);
-    admin = parseInt(adminStr);
-    chatId = parseInt(chatIdStr);
-  }
+  chatList = JSON.parse(
+    fs.readFileSync(CHAT_LIST_FILE, {
+      encoding: 'utf-8',
+      flag: 'a+',
+    }),
+  );
+
   bot
     .launch()
     .then(() => console.log('bot stoped'))
@@ -50,7 +53,9 @@ function start() {
 }
 
 function sendMessage(message: string) {
-  bot.telegram.sendMessage(chatId, message);
+  for (const { chatId } of chatList) {
+    bot.telegram.sendMessage(chatId, message);
+  }
 }
 
 export { sendMessage, isInitialized, start };
