@@ -16,7 +16,12 @@ export class AppController {
     // 3. compare with verifiableFormDto.tonProof.payload hash
     // 4. 404 if not equal
 
-    if (!(await this.tonSignature.checkSignature(verifiableFormDto.tonproof))) {
+    if (
+      !(await this.tonSignature.checkSignature(
+        verifiableFormDto.tonproof,
+        verifiableFormDto.account,
+      ))
+    ) {
       throw new HttpException('Bad signature', HttpStatus.BAD_REQUEST);
     }
 
@@ -24,6 +29,7 @@ export class AppController {
     for (const [k, v] of Object.entries(verifiableFormDto.form)) {
       msg.push(k, '\n', v, '\n');
     }
+    msg.push(`Signature: ${verifiableFormDto.tonproof.signature}`);
     tgBot.sendMessage(JSON.stringify(msg.join('\n')));
   }
 }

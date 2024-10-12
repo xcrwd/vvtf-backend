@@ -11,33 +11,37 @@ import { TonProof } from './dto/tonproofDto';
 import { knownWallets } from './ton.known.wallets';
 import { TonApiService } from './ton.api.service';
 import { sign } from 'tweetnacl';
+import { TonAccountDto } from './dto/tonAccountDto';
 
 const tonProofPrefix = 'ton-proof-item-v2/';
 const tonConnectPrefix = 'ton-connect';
 
 @Injectable()
 export class TonSignature {
-  async checkSignature(tonProof: TonProof): Promise<boolean> {
+  async checkSignature(
+    tonProof: TonProof,
+    account: TonAccountDto,
+  ): Promise<boolean> {
     try {
-      const client = TonApiService.create(tonProof.account.network);
+      const client = TonApiService.create(account.network);
 
       const stateInit = loadStateInit(
-        Cell.fromBase64(tonProof.account.stateInit).beginParse(),
+        Cell.fromBase64(account.stateInit).beginParse(),
       );
 
       const publicKey =
         this.tryParsePublicKey(stateInit) ??
-        (await client.getWalletPublicKey(tonProof.account.address));
+        (await client.getWalletPublicKey(account.address));
       if (!publicKey) {
         return false;
       }
 
-      const wantedPublicKey = Buffer.from(tonProof.account.publicKey, 'hex');
+      const wantedPublicKey = Buffer.from(account.publicKey, 'hex');
       if (!publicKey.equals(wantedPublicKey)) {
         return false;
       }
 
-      const wantedAddress = Address.parse(tonProof.account.address);
+      const wantedAddress = Address.parse(account.address);
       const address = contractAddress(wantedAddress.workChain, stateInit);
       if (!address.equals(wantedAddress)) {
         return false;
@@ -55,7 +59,7 @@ export class TonSignature {
         },
         signature: Buffer.from(tonProof.signature, 'base64'),
         payload: tonProof.payload,
-        stateInit: tonProof.account.stateInit,
+        stateInit: account.stateInit,
         timestamp: tonProof.timestamp,
       };
 
