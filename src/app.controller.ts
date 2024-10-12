@@ -1,7 +1,9 @@
 import { Body, HttpException, HttpStatus } from '@nestjs/common';
-import { Controller, Post } from '@nestjs/common';
+import { Controller, Post, Options } from '@nestjs/common';
 import { TonSignature } from './ton.signature.service';
 import { VerifiableFormDto } from './dto/verifiableFormDto';
+import { Response as Res } from 'express';
+import { Response } from '@nestjs/common';
 import * as tgBot from './tg.bot';
 import { Form } from './dto/form';
 
@@ -10,6 +12,11 @@ const ESCP = '\u000a';
 @Controller()
 export class AppController {
   constructor(private readonly tonSignature: TonSignature) {}
+
+  @Options('api/form')
+  headers(@Response() res: Res): Res {
+    return res.set({ 'Access-Control-Request-Headers': '*' });
+  }
 
   @Post('/api/form')
   async checkForm(@Body() verifiableFormDto: VerifiableFormDto) {
