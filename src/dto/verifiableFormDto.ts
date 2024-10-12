@@ -6,4 +6,5 @@ export class VerifiableFormDto {
   tonproof: TonProof;
   account: TonAccountDto;
   form: Form;
+  tgAccount: string;
 }
