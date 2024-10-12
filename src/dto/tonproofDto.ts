@@ -1,4 +1,4 @@
-import { TonChain } from './tonChain';
+import { TonAccountDto } from './tonAccountDto';
 
 export class TonProof {
   timestamp: string;
@@ -8,8 +8,5 @@ export class TonProof {
   };
   signature: string;
   payload: string;
-  stateInit: string;
-  network: TonChain;
-  address: string;
-  publicKey: string;
+  account: TonAccountDto;
 }

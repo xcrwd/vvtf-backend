@@ -19,25 +19,25 @@ const tonConnectPrefix = 'ton-connect';
 export class TonSignature {
   async checkSignature(tonProof: TonProof): Promise<boolean> {
     try {
-      const client = TonApiService.create(tonProof.network);
+      const client = TonApiService.create(tonProof.account.network);
 
       const stateInit = loadStateInit(
-        Cell.fromBase64(tonProof.stateInit).beginParse(),
+        Cell.fromBase64(tonProof.account.stateInit).beginParse(),
       );
 
       const publicKey =
         this.tryParsePublicKey(stateInit) ??
-        (await client.getWalletPublicKey(tonProof.address));
+        (await client.getWalletPublicKey(tonProof.account.address));
       if (!publicKey) {
         return false;
       }
 
-      const wantedPublicKey = Buffer.from(tonProof.publicKey, 'hex');
+      const wantedPublicKey = Buffer.from(tonProof.account.publicKey, 'hex');
       if (!publicKey.equals(wantedPublicKey)) {
         return false;
       }
 
-      const wantedAddress = Address.parse(tonProof.address);
+      const wantedAddress = Address.parse(tonProof.account.address);
       const address = contractAddress(wantedAddress.workChain, stateInit);
       if (!address.equals(wantedAddress)) {
         return false;
@@ -55,7 +55,7 @@ export class TonSignature {
         },
         signature: Buffer.from(tonProof.signature, 'base64'),
         payload: tonProof.payload,
-        stateInit: tonProof.stateInit,
+        stateInit: tonProof.account.stateInit,
         timestamp: tonProof.timestamp,
       };
 
