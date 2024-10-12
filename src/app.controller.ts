@@ -5,6 +5,8 @@ import { VerifiableFormDto } from './dto/verifiableFormDto';
 import * as tgBot from './tg.bot';
 import { Form } from './dto/form';
 
+const ESCP = '\u000a';
+
 @Controller()
 export class AppController {
   constructor(private readonly tonSignature: TonSignature) {}
@@ -29,12 +31,12 @@ export class AppController {
 
     const msg = [];
     for (const [k, v] of Object.entries(verifiableFormDto.form)) {
-      msg.push(`*${k}*`, '%0A', v, '%0A');
+      msg.push(`*${k}*: ${v}${ESCP}`);
     }
     msg.push(
-      `*Signature: ${verifiableFormDto.tonproof.signature.replaceAll('+', '\\+')}*`,
+      `*Signature*: ${verifiableFormDto.tonproof.signature.replaceAll('+', '\\+').replaceAll('=', '\\=')}`,
     );
-    tgBot.sendMessage(JSON.stringify(msg.join('%0A')));
+    tgBot.sendMessage(msg.join(ESCP));
   }
 }
 
