@@ -2,7 +2,7 @@ import { Telegraf } from 'telegraf';
 import * as fs from 'fs';
 import 'dotenv/config';
 
-const CHAT_LIST_FILE = './chat_list';
+const CHAT_LIST_FILE = process.env.TG_CHAT_LIST_FILE;
 
 const bot = new Telegraf(process.env.TG_BOT_TOKEN);
 
@@ -55,6 +55,7 @@ function start() {
 function sendMessage(message: string) {
   for (const { chatId } of chatList) {
     bot.telegram.sendMessage(chatId, message, { parse_mode: 'MarkdownV2' });
+    // bot.telegram.sendMessage(chatId, message);
   }
 }
 

@@ -3,6 +3,7 @@ import { Controller, Post } from '@nestjs/common';
 import { TonSignature } from './ton.signature.service';
 import { VerifiableFormDto } from './dto/verifiableFormDto';
 import * as tgBot from './tg.bot';
+import { Form } from './dto/form';
 
 @Controller()
 export class AppController {
@@ -10,11 +11,12 @@ export class AppController {
 
   @Post('/api/form')
   async checkForm(@Body() verifiableFormDto: VerifiableFormDto) {
-    // todo:
-    // 1. transform form into str
-    // 2. take sha256 hash
-    // 3. compare with verifiableFormDto.tonProof.payload hash
-    // 4. 404 if not equal
+    if (
+      (await payloadFromForm(verifiableFormDto.form)) !=
+      verifiableFormDto.tonproof.payload
+    ) {
+      throw new HttpException('Form hash mismatch', HttpStatus.BAD_REQUEST);
+    }
 
     if (
       !(await this.tonSignature.checkSignature(
@@ -27,9 +29,34 @@ export class AppController {
 
     const msg = [];
     for (const [k, v] of Object.entries(verifiableFormDto.form)) {
-      msg.push(`*${k}*`, '\n', v, '\n');
+      msg.push(`*${k}*`, '%0A', v, '%0A');
     }
-    msg.push(`*Signature: ${verifiableFormDto.tonproof.signature}*`);
-    tgBot.sendMessage(JSON.stringify(msg.join('\n')));
+    msg.push(
+      `*Signature: ${verifiableFormDto.tonproof.signature.replaceAll('+', '\\+')}*`,
+    );
+    tgBot.sendMessage(JSON.stringify(msg.join('%0A')));
   }
+}
+
+async function payloadFromForm(form: Form): Promise<string> {
+  const keys = Object.keys(form).sort();
+
+  const query = keys
+    .reduce(
+      (acc: string[], key) => acc.concat(key + '=' + String(form[key])),
+      [],
+    )
+    .join('&');
+
+  const sha = await sha256(query);
+  return sha;
+}
+
+async function sha256(message: string) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(message);
+  const digest = await globalThis.crypto.subtle.digest('SHA-256', data);
+  const bytes = Array.from(new Uint8Array(digest));
+  const hex = bytes.map((b) => b.toString(16).padStart(2, '0')).join('');
+  return hex;
 }
