@@ -7,6 +7,8 @@ async function bootstrapNest() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
     origin: '*',
+    methods: '*',
+    allowedHeaders: '*',
   });
   await app.listen(process.env.API_PORT || 3000);
   process.once('SIGINT', () => app.close());
@@ -14,6 +16,7 @@ async function bootstrapNest() {
 }
 
 async function main() {
+  console.log();
   bootstrapNest().catch(console.error);
   tgBotStart();
 }
