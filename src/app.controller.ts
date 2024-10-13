@@ -37,8 +37,8 @@ export class AppController {
       msg.push(`*${k}*: ${v}${ESCP}`);
     }
     msg.push(
-      `*Ton address*: ${verifiableFormDto.account.address}`,
-      `*Tg nickname*: ${verifiableFormDto.tgAccount.username}`,
+      `*Ton address*: ${verifiableFormDto.account.address}${ESCP}`,
+      `*Tg nickname*: @${verifiableFormDto.tgAccount.username}${ESCP}`,
       `*Signature*: ${verifiableFormDto.tonproof.signature.replaceAll('+', '\\+').replaceAll('=', '\\=')}`,
     );
     await tgBot.sendMessageToChatList(msg.join(ESCP));
