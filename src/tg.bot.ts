@@ -60,10 +60,10 @@ async function sendMessageToChatList(message: string) {
 
 async function sendMessageById(message: string, chatId: number) {
   try {
-    await bot.telegram.sendMessage(chatId, message, {
-      parse_mode: 'MarkdownV2',
-    });
-    // bot.telegram.sendMessage(chatId, message);
+    // await bot.telegram.sendMessage(chatId, message, {
+    //   parse_mode: 'MarkdownV2',
+    // });
+    await bot.telegram.sendMessage(chatId, message);
   } catch (e) {
     console.error(e);
   }
