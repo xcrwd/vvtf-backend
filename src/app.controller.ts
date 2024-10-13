@@ -38,14 +38,14 @@ export class AppController {
     }
     msg.push(
       `*Ton address*: ${verifiableFormDto.account.address}`,
-      `*Tg nickname*: ${verifiableFormDto.user.username}`,
+      `*Tg nickname*: ${verifiableFormDto.tgAccount.username}`,
       `*Signature*: ${verifiableFormDto.tonproof.signature.replaceAll('+', '\\+').replaceAll('=', '\\=')}`,
     );
     await tgBot.sendMessageToChatList(msg.join(ESCP));
-    if (verifiableFormDto.user && verifiableFormDto.user.id) {
+    if (verifiableFormDto.tgAccount && verifiableFormDto.tgAccount.id) {
       await tgBot.sendMessageById(
         `Much thanks${ESCP}@${ESCP}Such great`,
-        verifiableFormDto.user.id,
+        verifiableFormDto.tgAccount.id,
       );
     }
   }
