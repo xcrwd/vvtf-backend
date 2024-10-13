@@ -1,5 +1,5 @@
 import { Body, HttpException, HttpStatus } from '@nestjs/common';
-import { Controller, Post } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 import { TonSignature } from './ton.signature.service';
 import { VerifiableFormDto } from './dto/verifiableFormDto';
 import * as tgBot from './tg.bot';
@@ -10,6 +10,9 @@ const ESCP = '\u000a';
 @Controller()
 export class AppController {
   constructor(private readonly tonSignature: TonSignature) {}
+
+  @Get('/')
+  async healthcheck() {}
 
   @Post('/api/form')
   async checkForm(@Body() verifiableFormDto: VerifiableFormDto) {
@@ -34,12 +37,14 @@ export class AppController {
       msg.push(`*${k}*: ${v}${ESCP}`);
     }
     msg.push(
+      `*Ton address*: ${verifiableFormDto.account.address}`,
+      `*Tg nickname*: ${verifiableFormDto.user.username}`,
       `*Signature*: ${verifiableFormDto.tonproof.signature.replaceAll('+', '\\+').replaceAll('=', '\\=')}`,
     );
     await tgBot.sendMessageToChatList(msg.join(ESCP));
     if (verifiableFormDto.user && verifiableFormDto.user.id) {
       await tgBot.sendMessageById(
-        'Thank you for submit!',
+        `Much thanks${ESCP}@${ESCP}Such great`,
         verifiableFormDto.user.id,
       );
     }
