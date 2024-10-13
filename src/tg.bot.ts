@@ -52,17 +52,21 @@ function start() {
   started = true;
 }
 
-async function sendMessage(message: string) {
+async function sendMessageToChatList(message: string) {
   for (const { chatId } of chatList) {
-    try {
-      await bot.telegram.sendMessage(chatId, message, {
-        parse_mode: 'MarkdownV2',
-      });
-      // bot.telegram.sendMessage(chatId, message);
-    } catch (e) {
-      console.error(e);
-    }
+    await sendMessageById(message, chatId);
   }
 }
 
-export { sendMessage, isInitialized, start };
+async function sendMessageById(message: string, chatId: number) {
+  try {
+    await bot.telegram.sendMessage(chatId, message, {
+      parse_mode: 'MarkdownV2',
+    });
+    // bot.telegram.sendMessage(chatId, message);
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+export { sendMessageToChatList, sendMessageById, isInitialized, start };

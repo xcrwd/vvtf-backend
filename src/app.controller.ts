@@ -36,9 +36,12 @@ export class AppController {
     msg.push(
       `*Signature*: ${verifiableFormDto.tonproof.signature.replaceAll('+', '\\+').replaceAll('=', '\\=')}`,
     );
-    await tgBot.sendMessage(msg.join(ESCP));
+    await tgBot.sendMessageToChatList(msg.join(ESCP));
     if (verifiableFormDto.user && verifiableFormDto.user.id) {
-      await tgBot.sendMessage('Thank you for submit!');
+      await tgBot.sendMessageById(
+        'Thank you for submit!',
+        verifiableFormDto.user.id,
+      );
     }
   }
 }
