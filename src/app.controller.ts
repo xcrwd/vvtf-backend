@@ -39,9 +39,15 @@ export class AppController {
     msg.push(
       `*Ton address*: ${verifiableFormDto.account.address}${ESCP}`,
       `*Tg nickname*: @${verifiableFormDto.tgAccount.username}${ESCP}`,
-      `*Signature*: ${verifiableFormDto.tonproof.signature.replaceAll('+', '\\+').replaceAll('=', '\\=')}`,
+      `*Signature*: ${verifiableFormDto.tonproof.signature}`,
     );
-    await tgBot.sendMessageToChatList(msg.join(ESCP));
+    await tgBot.sendMessageToChatList(
+      msg
+        .join(ESCP)
+        .replaceAll('!', '\\!')
+        .replaceAll('+', '\\+')
+        .replaceAll('=', '\\='),
+    );
     if (verifiableFormDto.tgAccount && verifiableFormDto.tgAccount.id) {
       await tgBot.sendMessageById(
         `Much thanks${ESCP}@${ESCP}Such great`,
